@@ -25,8 +25,8 @@ class Settings:
         self.player_shoot_cooldown = 250  # milisegundos
 
         # Enemigos
-        self.enemy_speed = 1.5
-        self.enemy_drop = 25
+        self.enemy_speed = 2.5
+        self.enemy_drop = 40
         self.enemy_rows = 4
         self.enemy_cols = 8
         self.enemy_shoot_chance = 0.003
