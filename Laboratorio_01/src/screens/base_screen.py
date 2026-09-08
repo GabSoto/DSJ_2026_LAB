@@ -23,6 +23,10 @@ class BaseScreen:
     def draw(self):
         raise NotImplementedError
 
+    def draw_background(self, drift_x=0.0):
+        self.screen.fill(self.settings.bg_color)
+        self.game.parallax.draw(self.screen, drift_x)
+
     def switch_to(self, screen_class):
         self.done = True
         self.next_screen = screen_class

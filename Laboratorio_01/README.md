@@ -11,11 +11,12 @@ Laboratorio_01/
 ├── README.md                # Este archivo
 ├── assets/                  # Recursos multimedia
 │   ├── images/
-│   │   ├── backgrounds/     # Fondos del juego
-│   │   ├── bullets/         # Balas (bullet.png)
-│   │   ├── enemies/         # Enemigos (enemy.png)
-│   │   ├── explosions/      # Explosiones (explosion.png)
-│   │   └── player/          # Nave del jugador (player.png)
+│   │   ├── spacerage/       # Pack Space Rage (Player, Enemies, Explosions, FX, BG)
+│   │   ├── backgrounds/     # Fondo de respaldo
+│   │   ├── bullets/         # Balas de respaldo
+│   │   ├── enemies/         # Enemigos de respaldo
+│   │   ├── explosions/      # Explosiones de respaldo
+│   │   └── player/          # Nave de respaldo
 │   ├── audio/
 │   │   ├── music/           # Música de fondo (background.wav)
 │   │   └── sfx/             # Efectos de sonido
@@ -73,22 +74,21 @@ python main.py
 
 ## Assets
 
-Coloca tus propios archivos de audio e imágenes en las carpetas correspondientes dentro de `assets/`. El juego usa superficies de color como respaldo si no encuentra un archivo.
+Los sprites del juego salen del pack **Space Rage** (Artur Dycha, [dycha.net](http://dycha.net/)), copiado en `assets/images/spacerage/`. `AssetManager` carga esos PNG recortados (no hace falta el spritesheet). Si faltan, usa las imágenes viejas de `assets/images/` o un color sólido.
 
-### Archivos esperados
-
-| Tipo | Ruta esperada |
-|------|---------------|
-| Nave jugador | `assets/images/player/player.png` |
-| Enemigo | `assets/images/enemies/enemy.png` |
-| Bala jugador | `assets/images/bullets/bullet.png` |
-| Bala enemiga | `assets/images/bullets/bullet.png` |
-| Explosión | `assets/images/explosions/explosion.png` |
-| Fondo | `assets/images/backgrounds/background.jpg` |
+| Tipo | Ruta SpaceRage |
+|------|----------------|
+| Nave jugador | `spacerage/Player/player_b_*.png` |
+| Enemigo | `spacerage/Enemies/enemy_1_*.png` |
+| Enemigo especial | `spacerage/Enemies/enemy_2_*.png` |
+| Mina | `spacerage/Enemies/mine_1_*.png` |
+| Bala jugador | `spacerage/FX/vulcan_1.png` |
+| Bala enemiga | `spacerage/FX/plasma_1.png` |
+| Explosión | `spacerage/Explosions/explosion_1_*.png` |
+| Fondo | `spacerage/BG.png` |
 | Música | `assets/audio/music/background.wav` |
 | Disparo | `assets/audio/sfx/laser.wav` |
-| Explosión | `assets/audio/sfx/explosion.wav` |
-| Daño jugador | `assets/audio/sfx/player_hit.wav` |
+| Explosión (sfx) | `assets/audio/sfx/explosion.wav` |
 | Fuente | `assets/fonts/pixel.ttf` |
 
 ## Personalización

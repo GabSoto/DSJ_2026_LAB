@@ -8,10 +8,11 @@ from src.entities.enemy import Enemy
 
 
 class EnemyManager:
-    FORMATIONS = ["grid", "wedge", "diamond", "staggered", "checkerboard"]
+    FORMATIONS = ["grid", "wedge", "staggered", "checkerboard"]
 
-    def __init__(self, settings):
+    def __init__(self, settings, assets):
         self.settings = settings
+        self.assets = assets
         self.enemies = pygame.sprite.Group()
         self.special_enemies = pygame.sprite.Group()
         self.direction = 1
@@ -31,28 +32,26 @@ class EnemyManager:
         return (row + col) % 2 == 1
 
     def _build_grid(self):
-        enemy_width = 40
-        enemy_height = 30
-        padding = 15
+        enemy_width = self.settings.enemy_cell_width
+        enemy_height = self.settings.enemy_cell_height
+        padding = self.settings.enemy_padding
         start_x = 60
         start_y = 50
 
         for row in range(self.settings.enemy_rows):
             for col in range(self.settings.enemy_cols):
-                if self._is_checkerboard_gap(row, col):
-                    continue
                 x = start_x + col * (enemy_width + padding)
                 y = start_y + row * (enemy_height + padding)
                 points = (self.settings.enemy_rows - row) * 10
                 enemy_type = "ufo" if row == 0 and col % 3 == 0 else "basic"
-                enemy = Enemy(x, y, self.settings, enemy_type, points, (row, col))
+                enemy = Enemy(x, y, self.settings, self.assets, enemy_type, points, (row, col))
                 enemy.direction = self.direction
                 self.enemies.add(enemy)
 
     def _build_wedge(self):
-        enemy_width = 40
-        enemy_height = 30
-        padding = 15
+        enemy_width = self.settings.enemy_cell_width
+        enemy_height = self.settings.enemy_cell_height
+        padding = self.settings.enemy_padding
         start_y = 50
         cols = self.settings.enemy_cols
 
@@ -62,64 +61,42 @@ class EnemyManager:
                 break
             start_x = (self.settings.screen_width - width * (enemy_width + padding)) // 2
             for col in range(width):
-                if self._is_checkerboard_gap(row, col):
-                    continue
                 x = start_x + col * (enemy_width + padding)
                 y = start_y + row * (enemy_height + padding)
                 points = (self.settings.enemy_rows - row) * 15
                 enemy_type = "ufo" if row == 0 and col == width // 2 else "basic"
-                enemy = Enemy(x, y, self.settings, enemy_type, points, (row, col))
+                enemy = Enemy(x, y, self.settings, self.assets, enemy_type, points, (row, col))
                 enemy.direction = self.direction
                 self.enemies.add(enemy)
 
-    def _build_diamond(self):
-        enemy_width = 40
-        enemy_height = 30
-        padding = 15
-        center_x = self.settings.screen_width // 2
-        start_y = 40
-        max_radius = min(self.settings.enemy_rows, self.settings.enemy_cols // 2)
-
-        for radius in range(max_radius + 1):
-            count = max(1, radius * 4)
-            for i in range(count):
-                # Patrón intercalado en el diametro
-                if radius > 0 and (radius + i) % 2 == 1:
-                    continue
-                angle = (2 * math.pi / count) * i
-                x = center_x + math.cos(angle) * radius * (enemy_width + padding) - enemy_width // 2
-                y = start_y + radius * (enemy_height + padding) + math.sin(angle) * radius * (enemy_height // 2)
-                points = (max_radius - radius + 1) * 15
-                enemy_type = "ufo" if radius == 0 else "basic"
-                enemy = Enemy(x, y, self.settings, enemy_type, points, (radius, i))
-                enemy.direction = self.direction
-                self.enemies.add(enemy)
+    # def _build_diamond(self):
+    #     # Desactivada: con celdas de 64 px la formación queda muy grande
+    #     # y los enemigos llegan al fondo demasiado rápido.
+    #     pass
 
     def _build_staggered(self):
-        enemy_width = 40
-        enemy_height = 30
-        padding = 15
+        enemy_width = self.settings.enemy_cell_width
+        enemy_height = self.settings.enemy_cell_height
+        padding = self.settings.enemy_padding
         start_x = 50
         start_y = 50
 
         for row in range(self.settings.enemy_rows):
             offset = (enemy_width + padding) // 2 if row % 2 == 1 else 0
             for col in range(self.settings.enemy_cols):
-                if self._is_checkerboard_gap(row, col):
-                    continue
                 x = start_x + col * (enemy_width + padding) + offset
                 y = start_y + row * (enemy_height + padding)
                 points = (self.settings.enemy_rows - row) * 10
                 enemy_type = "ufo" if row == 0 and col % 4 == 0 else "basic"
-                enemy = Enemy(x, y, self.settings, enemy_type, points, (row, col))
+                enemy = Enemy(x, y, self.settings, self.assets, enemy_type, points, (row, col))
                 enemy.direction = self.direction
                 self.enemies.add(enemy)
 
     def _build_checkerboard(self):
         """Formación pura de tablero de ajedrez."""
-        enemy_width = 40
-        enemy_height = 30
-        padding = 15
+        enemy_width = self.settings.enemy_cell_width
+        enemy_height = self.settings.enemy_cell_height
+        padding = self.settings.enemy_padding
         start_x = 60
         start_y = 50
 
@@ -131,7 +108,7 @@ class EnemyManager:
                 y = start_y + row * (enemy_height + padding)
                 points = (self.settings.enemy_rows - row) * 10
                 enemy_type = "ufo" if row == 0 and col % 3 == 0 else "basic"
-                enemy = Enemy(x, y, self.settings, enemy_type, points, (row, col))
+                enemy = Enemy(x, y, self.settings, self.assets, enemy_type, points, (row, col))
                 enemy.direction = self.direction
                 self.enemies.add(enemy)
 
@@ -144,12 +121,11 @@ class EnemyManager:
         else:
             x = self.settings.screen_width + 50
 
-        special = Enemy(x, y, self.settings, enemy_type="ufo", points=25)
-        special.speed = 3.0
-        special.base_x = x
-        special.base_y = y
-        # Sobrescribir update para movimiento horizontal puro
-        special.update = lambda time_now=None, gd=direction, sp=special: sp._special_update(time_now, gd)
+        special = Enemy(
+            x, y, self.settings, self.assets,
+            enemy_type="ufo", points=25,
+            cross_direction=direction
+        )
         self.special_enemies.add(special)
 
     def update(self):
@@ -194,11 +170,17 @@ class EnemyManager:
         self._special_spawn_timer = pygame.time.get_ticks()
         self._create_formation()
 
+    def clear_specials(self):
+        self.special_enemies.empty()
+
     def is_empty(self):
         return len(self.enemies) == 0
 
     def reached_bottom(self):
+        # El jugador está en ~y=516 (top). Game over cuando los enemigos
+        # llegan casi a tocarlo, no antes.
+        threshold = self.settings.screen_height - 70
         for enemy in self.enemies:
-            if enemy.rect.bottom >= self.settings.screen_height - 50:
+            if enemy.rect.bottom >= threshold:
                 return True
         return False

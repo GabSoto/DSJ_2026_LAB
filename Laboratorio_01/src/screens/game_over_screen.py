@@ -29,10 +29,7 @@ class GameOverScreen(BaseScreen):
         pass
 
     def draw(self):
-        self.screen.fill(self.settings.bg_color)
-        bg = self.assets.get_image("background")
-        if bg:
-            self.screen.blit(bg, (0, 0))
+        self.draw_background()
 
         draw_text(
             self.screen,

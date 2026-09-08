@@ -5,16 +5,29 @@ import os
 import pygame
 
 
-def load_image(path, fallback_size=(32, 32), fallback_color=(255, 255, 255)):
+def load_image(path, fallback_size=(32, 32), fallback_color=(255, 255, 255), size=None):
     """Carga una imagen o devuelve una superficie de color si no existe."""
+    image = None
     if os.path.exists(path):
         try:
-            return pygame.image.load(path).convert_alpha()
+            image = pygame.image.load(path).convert_alpha()
         except pygame.error:
-            pass
-    surface = pygame.Surface(fallback_size, pygame.SRCALPHA)
-    surface.fill(fallback_color)
-    return surface
+            image = None
+    if image is None:
+        image = pygame.Surface(fallback_size, pygame.SRCALPHA)
+        image.fill(fallback_color)
+    if size:
+        image = pygame.transform.smoothscale(image, size)
+    return image
+
+
+def load_frame_sequence(directory, prefix, count, pad=2, fallback_size=(32, 32), fallback_color=(255, 140, 0)):
+    """Carga frames numerados: prefix_01.png, prefix_02.png, ..."""
+    frames = []
+    for index in range(1, count + 1):
+        filename = f"{prefix}_{index:0{pad}d}.png"
+        frames.append(load_image(os.path.join(directory, filename), fallback_size, fallback_color))
+    return frames
 
 
 def load_font(path, size):
